@@ -14,11 +14,10 @@ import Input, { InputLabel } from 'material-ui/Input';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { FormControl } from 'material-ui/Form';
-// import { deploy as DeployContract } from '../../minime/js/deploy_contracts';
+import { CircularProgress } from 'material-ui/Progress';
+import DeployContract from '../../utils/DeployContract';
 
-const styles = theme => {
-  console.log(theme);
-  return ({
+const styles = theme => ({
   card: {
     height: 100
   },
@@ -56,16 +55,25 @@ const styles = theme => {
   inputSelect: {
     width: '90%',
     margin: '17 10 0',
-  }
-})};
+  },
+  buttonProgress: {
+    color: theme.palette.secondary[500],
+    float: 'right',
+    position: 'relative',
+    marginTop: 22,
+    marginRight: -70,
+  },
+
+});
 
 @observer
 class NewToken extends React.Component {
   @observable tokenAddress = '';
   @observable tokenName;
-  @observable transfersEnabled=true;
-  @observable decimalUnits=18;
+  @observable transfersEnabled = true;
+  @observable decimalUnits = 18;
   @observable tokenSymbol;
+  @observable loading = false;
 
   render () {
     const { classes } = this.props;
@@ -81,6 +89,8 @@ class NewToken extends React.Component {
               <TextField
                 id="name"
                 label="Token name"
+                name="tokenName"
+                onChange={this.handleChange}
                 className={classes.textField}
                 margin="normal"
                 required={true}
@@ -90,6 +100,8 @@ class NewToken extends React.Component {
               <TextField
                 id="decimalUnits"
                 label="Decimal units"
+                name="decimalUnits"
+                onChange={this.handleChange}
                 className={classes.textField}
                 margin="normal"
                 type="number"
@@ -100,6 +112,8 @@ class NewToken extends React.Component {
               <TextField
                 id="symbol"
                 label="Token symbol"
+                name="tokenSymbol"
+                onChange={this.handleChange}
                 className={classes.textField}
                 margin="normal"
                 required={true}
@@ -122,7 +136,8 @@ class NewToken extends React.Component {
               </div>
             </Grid>
             <Grid item xs={12} >
-              <CustomButton type="submit" classes={{button:'floatRight'}}/>
+              <CustomButton type="submit" disabled={this.loading} classes={{button:'floatRight'}}/>
+              { this.loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             </Grid>
           </Grid>
         </form>
@@ -133,8 +148,7 @@ class NewToken extends React.Component {
               <Typography className={classes.typography} type="body1" noWrap>
                 {'Your token address is:'}
               </Typography>
-              <Typography type="title" color='primary' noWrap>
-                {this.tokenAddress}
+              <Typography type="title" color='primary' noWrap dangerouslySetInnerHTML={{__html:this.tokenAddress}}>
               </Typography>
             </div>
           )
@@ -150,19 +164,25 @@ class NewToken extends React.Component {
 
   @action
   handleFormSubmit = e => {
+    e.preventDefault();
+    this.loading = true;
+    console.log(e);
     const deploymentOptions = {
         parentToken: 0,
         parentSnapShotBlock: 0,
         tokenName: this.tokenName,
         decimalUnits: this.decimalUnits,
-        tokenSymbol: this.symbol,
-        transfersEnabled: true,
+        tokenSymbol: this.tokenSymbol,
+        transfersEnabled: this.transfersEnabled,
     };
-    // DeployContract(deploymentOptions).then((addresses) => {
-    //     console.log(addresses);
-    //     this.tokenAddress = `${addresses[1]} (${addresses[0]})`;
-    // });
-    e.preventDefault();
+    DeployContract.deploy(deploymentOptions)
+        .then((addresses) => {
+            this.tokenAddress = `${addresses[1]}<br> (${addresses[0]})`;
+            this.loading = false;
+        })
+        .catch((err) => {
+            this.loading = false;
+        });
   };
 }
 

@@ -1,0 +1,6 @@
+[submodule "minime"]
+	path = minime
+	url = https://github.com/binary-com/minime
+[submodule "src/minime"]
+	path = src/minime
+	url = https://github.com/binary-com/minime

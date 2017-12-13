@@ -1,4 +1,4 @@
-Binary Token Admin UI
+Binary Token UI
 =====================
 
 UI for interacting with binary token.

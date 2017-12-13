@@ -40,12 +40,7 @@ function deployContract (contract, args, bytecode) {
                 } else {
                     getTransactionReceipt(res.transactionHash, resolve, reject);
                 }
-            }
-            if(res && res.address) {
-                console.log("TransactionHash", res.transactionHash);
-                resolve(res);
-            }
-            if (err) {
+            } else {
                 reject(err);
             }
         });

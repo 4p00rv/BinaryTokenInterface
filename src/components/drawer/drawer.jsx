@@ -11,7 +11,6 @@ import List from 'material-ui/List';
 import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import Tooltip from 'material-ui/Tooltip';
 
@@ -20,6 +19,7 @@ import DrawerStyle from '../styles/drawerStyle';
 import Menu from './menu/list';
 import menuModel from '../../models/MenuModel';
 import NewTokenContent from '../content/newToken';
+import AddTokenButton from './addTokenButton';
 
 /* Create menu items */
 const menu = new menuModel();
@@ -44,18 +44,16 @@ class MiniDrawer extends React.Component {
   get content () {
     const item = menu.selectedMenuItem();
     if(item && item.length) {
-        if(item[0].icon === 'create') {
-          return (
-            <NewTokenContent />
-          );
-        }
-        if(item[0].icon === 'send') {
-          return (
+        const content = {
+          create: (<NewTokenContent />),
+          send: (
             <Typography type="body1" noWrap>
               {'Transfer token'}
             </Typography>
-          );
-        }
+          ),
+        };
+
+        return content[item[0].icon];
     }
   }
 
@@ -66,7 +64,7 @@ class MiniDrawer extends React.Component {
       <div className={classes.root}>
         <div className={classes.appFrame}>
           <AppBar className={classNames(classes.appBar, this.open && classes.appBarShift)}>
-            <Toolbar disableGutters={!this.open}>
+            <Toolbar disableGutters={!this.open} className={classes.toolbar}>
               <Tooltip id="tooltip-icon" title="Open drawer" placement="bottom">
                 <IconButton
                   color="contrast"
@@ -77,9 +75,10 @@ class MiniDrawer extends React.Component {
                   <BinaryIcon/>
                 </IconButton>
               </Tooltip>
-              <Typography type="title" color="inherit" noWrap>
+              <Typography type="title" color="inherit" className={classes.flex}>
                 Binary Token
               </Typography>
+              <AddTokenButton />
             </Toolbar>
           </AppBar>
           <Drawer

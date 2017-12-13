@@ -16,11 +16,17 @@ const styles = theme => ({
     zIndex: 1,
     overflow: 'hidden',
   },
+  toolbar: {
+    paddingRight: theme.spacing.unit * 3,
+  },
   appFrame: {
     position: 'relative',
     display: 'flex',
     width: '100%',
     height: '100%',
+  },
+  flex: {
+    flex: 1,
   },
   appBar: {
     position: 'fixed',

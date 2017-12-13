@@ -2,6 +2,7 @@ import { observable, computed } from "mobx";
 import React from 'react';
 import CreateIcon from 'material-ui-icons/Create';
 import SendIcon from 'material-ui-icons/Send';
+import TokenIcon from 'material-ui-icons/MonetizationOn';
 
 let i = 0;
 
@@ -19,11 +20,12 @@ export default class MenuItem {
 
   @computed
   get Icon () {
-    if(this.icon === 'create') {
-      return (<CreateIcon />);
-    }
-    if(this.icon === 'send') {
-      return (<SendIcon />)
-    }
+    const icons = {
+        create: (<CreateIcon />),
+        send: (<SendIcon />),
+        token: (<TokenIcon />),
+    };
+
+    return icons[this.icon];
   }
 }

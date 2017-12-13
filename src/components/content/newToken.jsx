@@ -16,6 +16,7 @@ import { MenuItem } from 'material-ui/Menu';
 import { FormControl } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
 import DeployContract from '../../utils/DeployContract';
+import Session from '../../models/SessionStorage';
 
 const styles = theme => ({
   card: {
@@ -25,7 +26,7 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    overflow: 'hidden',
+    overflow: 'scroll',
     background: theme.palette.background.paper,
     borderRadius: 3,
     boxShadow: theme.shadows[4],
@@ -68,19 +69,26 @@ const styles = theme => ({
 
 @observer
 class NewToken extends React.Component {
-  @observable tokenAddress = '';
   @observable tokenName;
   @observable transfersEnabled = true;
   @observable decimalUnits = 18;
   @observable tokenSymbol;
   @observable loading = false;
 
+  getAddress() {
+    const tokenAddress = Session.storage.get('tokenAddress');
+    const tokenFactoryAddress = Session.storage.get('tokenFactoryAddress');
+    if(tokenAddress) return [tokenAddress, tokenFactoryAddress];
+
+    return false;
+  }
+
   render () {
     const { classes } = this.props;
 
     return (
       <div className={classes.container}>
-        <form onSubmit={this.handleFormSubmit} style={{height: 300}}>
+        <form onSubmit={this.handleFormSubmit} style={{minHeight: 300}}>
           <Grid container spacing={16} className={classes.root}>
             <Grid item key="Subheader" xs={12} style={{ height: 50 }}>
               <Subheader component="div">Create New Token</Subheader>
@@ -136,19 +144,23 @@ class NewToken extends React.Component {
               </div>
             </Grid>
             <Grid item xs={12} >
-              <CustomButton type="submit" disabled={this.loading} classes={{button:'floatRight'}}/>
+              <CustomButton raised={true} type="submit" content="Add" disabled={this.loading} classes={{button:'floatRight'}}/>
               { this.loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             </Grid>
           </Grid>
         </form>
         {
-          this.tokenAddress &&
+          this.getAddress() &&
           (
             <div className={classes.tokenAddress}>
-              <Typography className={classes.typography} type="body1" noWrap>
+              <Typography className={classes.typography} type="subheading" noWrap>
                 {'Your token address is:'}
               </Typography>
-              <Typography type="title" color='primary' noWrap dangerouslySetInnerHTML={{__html:this.tokenAddress}}>
+              <Typography type="body2" color='primary' noWrap>
+                {this.getAddress()[0]}
+              </Typography>
+              <Typography type="body2" color='primary' noWrap>
+                {this.getAddress()[1]}
               </Typography>
             </div>
           )
@@ -166,7 +178,7 @@ class NewToken extends React.Component {
   handleFormSubmit = e => {
     e.preventDefault();
     this.loading = true;
-    console.log(e);
+
     const deploymentOptions = {
         parentToken: 0,
         parentSnapShotBlock: 0,
@@ -177,7 +189,8 @@ class NewToken extends React.Component {
     };
     DeployContract.deploy(deploymentOptions)
         .then((addresses) => {
-            this.tokenAddress = `${addresses[1]}<br> (${addresses[0]})`;
+            Session.setItem('tokenAddress', addresses[1]);
+            Session.setItem('tokenFactoryAddress', addresses[0]);
             this.loading = false;
         })
         .catch((err) => {

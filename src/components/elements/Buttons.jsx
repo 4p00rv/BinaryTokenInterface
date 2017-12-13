@@ -19,8 +19,8 @@ const styles = theme => ({
 function RaisedButtons(props) {
   const { classes } = props;
   return (
-      <Button raised type={props.type} disabled={props.disabled} color="primary" className={classes.button}>
-        Add
+      <Button raised={props.raised} type={props.type} disabled={props.disabled} color={props.color || 'primary'} className={classes.button}>
+        { props.content }
       </Button>
   );
 }

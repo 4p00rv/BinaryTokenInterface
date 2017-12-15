@@ -15,56 +15,26 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { FormControl } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
+
 import DeployContract from '../../utils/DeployContract';
 import Session from '../../models/SessionStorage';
+import commonStyles from '../styles/commonStyle';
+import GenerateTokens from './generateTokens';
 
 const styles = theme => ({
-  card: {
-    height: 100
-  },
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'scroll',
-    background: theme.palette.background.paper,
-    borderRadius: 3,
-    boxShadow: theme.shadows[4],
-    padding: 10,
-    width: '90%',
-    height: '85%',
-    margin: 'auto'
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: '90%',
-  },
-  tokenAddress: {
-    textAlign: 'center',
-    padding: '10 20 15 20',
-    // boxShadow: theme.shadows[1],
-    maxHeight: 70,
-  },
-  typography: {
-    marginBottom: 10,
-    fontSize: theme.typography.pxToRem(16),
-  },
-  select: {
-    display: 'block',
-  },
-  inputSelect: {
-    width: '90%',
-    margin: '17 10 0',
-  },
-  buttonProgress: {
-    color: theme.palette.secondary[500],
-    float: 'right',
-    position: 'relative',
-    marginTop: 22,
-    marginRight: -70,
-  },
-
+    ...commonStyles(theme),
+    tokenAddress: {
+      textAlign: 'center',
+      padding: '10 20 15 20',
+      maxHeight: 70,
+    },
+    typography: {
+      marginBottom: 10,
+      fontSize: theme.typography.fontSize,
+    },
+    inputLabel: {
+      ...theme.typography.caption
+    },
 });
 
 @observer
@@ -89,11 +59,14 @@ class NewToken extends React.Component {
     return (
       <div className={classes.container}>
         <form onSubmit={this.handleFormSubmit} style={{minHeight: 300}}>
-          <Grid container spacing={16} className={classes.root}>
-            <Grid item key="Subheader" xs={12} style={{ height: 50 }}>
-              <Subheader component="div">Create New Token</Subheader>
+          <Grid container spacing={24} >
+            <Grid item key="Subheader" xs={6} sm={6}>
+              <Subheader component="div">New Token</Subheader>
             </Grid>
-            <Grid item sm={6} md={3}>
+            <Grid item xs={6} sm={6}>
+              {this.getAddress() && <GenerateTokens />}
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 id="name"
                 label="Token name"
@@ -102,21 +75,24 @@ class NewToken extends React.Component {
                 className={classes.textField}
                 margin="normal"
                 required={true}
+                fullWidth
               />
             </Grid>
-            <Grid item sm={6} md={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 id="decimalUnits"
                 label="Decimal units"
                 name="decimalUnits"
+                value={this.decimalUnits}
                 onChange={this.handleChange}
                 className={classes.textField}
                 margin="normal"
                 type="number"
                 required={true}
+                fullWidth
               />
             </Grid>
-            <Grid item sm={6} md={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 id="symbol"
                 label="Token symbol"
@@ -125,12 +101,13 @@ class NewToken extends React.Component {
                 className={classes.textField}
                 margin="normal"
                 required={true}
+                fullWidth
               />
             </Grid>
 
-            <Grid item sm={6} md={3}>
+            <Grid item xs={12} sm={6}>
               <div className={classes.inputSelect}>
-                <InputLabel htmlFor="age-helper" required>Tranfers Enabled</InputLabel>
+                <InputLabel className={classes.inputLabel} htmlFor="transfersEnabled" required>Tranfers enabled</InputLabel>
                 <Select
                   required
                   className={classes.select}
@@ -144,7 +121,7 @@ class NewToken extends React.Component {
               </div>
             </Grid>
             <Grid item xs={12} >
-              <CustomButton raised={true} type="submit" content="Add" disabled={this.loading} classes={{button:'floatRight'}}/>
+              <CustomButton raised={true} type="submit" content="Add" disabled={this.loading}/>
               { this.loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             </Grid>
           </Grid>
@@ -152,17 +129,24 @@ class NewToken extends React.Component {
         {
           this.getAddress() &&
           (
-            <div className={classes.tokenAddress}>
-              <Typography className={classes.typography} type="subheading" noWrap>
-                {'Your token address is:'}
-              </Typography>
-              <Typography type="body2" color='primary' noWrap>
-                {this.getAddress()[0]}
-              </Typography>
-              <Typography type="body2" color='primary' noWrap>
-                {this.getAddress()[1]}
-              </Typography>
-            </div>
+            <Grid container spacing={16} >
+              <Grid item xs={12} >
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <div className={classes.tokenAddress}>
+                  <Typography className={classes.typography} type="subheading" noWrap>
+                    {'Your token address is:'}
+                  </Typography>
+                  <Typography type="body2" color='primary' noWrap>
+                    {this.getAddress()[0]}
+                  </Typography>
+                  <Typography type="body2" color='primary' noWrap>
+                    {this.getAddress()[1]}
+                  </Typography>
+                </div>
+              </Grid>
+            </Grid>
           )
         }
       </div>
@@ -189,9 +173,10 @@ class NewToken extends React.Component {
     };
     DeployContract.deploy(deploymentOptions)
         .then((addresses) => {
+            console.log(addresses);
+            this.loading = false;
             Session.setItem('tokenAddress', addresses[1]);
             Session.setItem('tokenFactoryAddress', addresses[0]);
-            this.loading = false;
         })
         .catch((err) => {
             this.loading = false;

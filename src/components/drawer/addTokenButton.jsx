@@ -30,11 +30,6 @@ class AddTokenButton extends React.Component {
   }
 
   @action
-  sessionHas = (key) => {
-    return Session.storage.has(key);
-  }
-
-  @action
   formatAddress = (address) => {
     return address && address.length > 15
       ? `${address.slice(0,10)}...${address.slice(-5)}`
@@ -104,11 +99,11 @@ class AddTokenButton extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleRequestClose} color="primary">
-              Cancel
+            <Button onClick={this.handleRequestClose} color="accent">
+              Clear
             </Button>
             <Button onClick={this.handleRequestClose} color="primary">
-              Clear
+              Cancel
             </Button>
             <Button onClick={this.handleRequestClose} color="primary">
               Okay

@@ -7,8 +7,10 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit*2,
     '&.floatRight': {
-      float: 'right',
-      marginRight: 20,
+      [theme.breakpoints.up('sm')]: {
+        float: 'right',
+      },
+      margin: '10 10 0',
     },
   },
   input: {
@@ -19,7 +21,14 @@ const styles = theme => ({
 function RaisedButtons(props) {
   const { classes } = props;
   return (
-      <Button raised={props.raised} type={props.type} disabled={props.disabled} color={props.color || 'primary'} className={classes.button}>
+      <Button
+        raised={props.raised}
+        type={props.type}
+        disabled={props.disabled}
+        color={props.color || 'primary'}
+        className={classes.button}
+        onClick={props.onClick}
+      >
         { props.content }
       </Button>
   );

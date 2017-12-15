@@ -6,6 +6,7 @@ UI for interacting with binary token.
 ### Run the following
 
 ```
+git clone --recursive <repo-name>
 npm install
 npm start
 ```

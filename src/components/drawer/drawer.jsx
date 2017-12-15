@@ -19,6 +19,7 @@ import DrawerStyle from '../styles/drawerStyle';
 import Menu from './menu/list';
 import menuModel from '../../models/MenuModel';
 import NewTokenContent from '../content/newToken';
+import TransferTokenContent from '../content/transferToken';
 import AddTokenButton from './addTokenButton';
 
 /* Create menu items */
@@ -46,11 +47,7 @@ class MiniDrawer extends React.Component {
     if(item && item.length) {
         const content = {
           create: (<NewTokenContent />),
-          send: (
-            <Typography type="body1" noWrap>
-              {'Transfer token'}
-            </Typography>
-          ),
+          send: (<TransferTokenContent />),
         };
 
         return content[item[0].icon];

@@ -30,7 +30,7 @@ function getContract (abi) {
 
 function deployContract (contract, args, bytecode) {
     return new Promise((resolve, reject) => {
-        contract.new(args, {
+        contract.new(...args, {
             data: bytecode
         }, (err, res) => {
             if(res) {
